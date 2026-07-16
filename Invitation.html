@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wedding Passport · Toy dəvətnaməsi</title>
+
+<!-- ============================================================= -->
+<!--  MƏLUMATLARI DƏYİŞMƏK ÜÇÜN səhifənin sonundakı CONFIG bölməsi  -->
+<!-- ============================================================= -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Oswald:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ivory:#F3EFE6;
+    --paper:#FBF9F3;
+    --blue:#AEC3D6;
+    --blue-lt:#DCE6EF;
+    --blue-deep:#6E88A3;
+    --slate:#2B3A47;
+    --slate-soft:#4A5A68;
+    --gold:#C2A15A;
+    --gold-deep:#A8863F;
+    --gold-lt:#E2CD93;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Oswald',sans-serif;font-weight:300;background:var(--ivory);color:var(--slate);line-height:1.7;overflow-x:hidden}
+  .serif{font-family:'Cormorant Garamond',serif}
+  .script{font-family:'Great Vibes',cursive}
+
+  /* ---------------- PASSPORT COVER ---------------- */
+  #passport{
+    position:fixed;inset:0;z-index:100;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 35%, #6f7d84, #454f56 70%);
+    padding:1.4rem;
+    /* fon təyyarə uçandan bir az sonra sönsün (.5s gecikmə) */
+    transition:opacity 1s ease .5s, visibility 1s ease .5s, background .8s ease .5s;
+  }
+  #passport.open{opacity:0;visibility:hidden;pointer-events:none}
+  .book{
+    width:100%;max-width:340px;aspect-ratio:11/16;
+    background:linear-gradient(155deg,#f6f2e9,#e9e3d4);
+    border-radius:10px 16px 16px 10px;
+    box-shadow:0 40px 70px -30px rgba(0,0,0,.6), inset 0 0 0 1px rgba(194,161,90,.35);
+    position:relative;overflow:visible;      /* <-- təyyarənin yuxarı uçub çıxması üçün */
+    display:flex;flex-direction:column;align-items:center;
+    padding:0 1.6rem 1.8rem;
+    transform-origin:center center;
+    /* qutu YERİNDƏ sönsün, təyyarə uçandan sonra (.45s gecikmə) */
+    transition:opacity .9s ease .45s;
+  }
+  #passport.open .book{opacity:0}
+  .book::before{
+    content:"";position:absolute;top:16%;left:50%;transform:translateX(-50%);
+    width:230px;height:230px;border-radius:50%;
+    background:repeating-radial-gradient(circle, transparent 0 17px, rgba(110,136,163,.06) 17px 18px);
+    opacity:.7;pointer-events:none;
+  }
+  .book-strip{
+    width:calc(100% + 3.2rem);margin:0 -1.6rem;
+    background:linear-gradient(180deg,#3a444c,#2b333a);
+    color:var(--gold-lt);text-align:center;padding:1.05rem 1rem;
+    letter-spacing:.32em;font-family:'Cormorant Garamond',serif;font-weight:600;
+    font-size:1.05rem;border-radius:10px 16px 0 0;text-shadow:0 1px 0 rgba(0,0,0,.3);
+  }
+  .book-title{margin-top:2.1rem;text-align:center}
+  .book-title .wd{font-family:'Great Vibes',cursive;font-size:2.1rem;line-height:.8;color:var(--gold-deep)}
+  .book-title .pp{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.44em;font-size:1.15rem;margin-left:.44em;color:var(--gold-deep)}
+
+  .emblem{position:relative;margin-top:1.4rem;cursor:pointer;width:190px;height:190px;display:flex;align-items:center;justify-content:center}
+  .emblem .ring{position:absolute;inset:0;animation:ringspin 26s linear infinite}
+  .plane-svg{width:118px;height:118px;position:relative;z-index:5;filter:drop-shadow(0 6px 10px rgba(168,134,63,.5));animation:planePulse 2.6s ease-in-out infinite;
+    /* uçuş: yuxarı sürətli start (ease-out) */
+    transition:transform 1.5s cubic-bezier(.3,0,.2,1), opacity 1.2s ease .3s}
+  /* təyyarə düz YUXARI uçub ekrandan çıxsın */
+  #passport.open .plane-svg{animation:flyUp 2s cubic-bezier(.35,0,.15,1) forwards}
+  @keyframes flyUp{from{transform:translateY(0) scale(1);opacity:1}to{transform:translateY(-120vh) scale(.5);opacity:0}}
+  @keyframes planePulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes ringspin{to{transform:rotate(360deg)}}
+  .tap-hint{margin-top:.4rem;font-family:'Oswald',sans-serif;font-weight:300;font-size:.7rem;letter-spacing:.32em;text-transform:uppercase;color:var(--slate-soft);display:flex;align-items:center;gap:.5rem;text-align:center}
+  .tap-hint b{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 1.6s infinite;flex:none}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+  .book-names{margin-top:1.3rem;text-align:center}
+  .book-names .n{font-family:'Cormorant Garamond',serif;letter-spacing:.28em;font-size:1.15rem;color:var(--gold-deep);font-weight:600}
+  .book-names .d{font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.24em;font-size:.75rem;color:var(--slate-soft);margin-top:.35rem}
+  .medallion{margin-top:auto;width:78px;height:96px;border:1.5px solid var(--gold);border-radius:50%/44%;display:flex;align-items:center;justify-content:center;position:relative}
+  .medallion::before{content:"";position:absolute;inset:5px;border:1px solid rgba(194,161,90,.5);border-radius:50%/44%}
+  .medallion span{font-family:'Great Vibes',cursive;font-size:1.5rem;color:var(--gold-deep)}
+
+  /* ---------------- SECTIONS ---------------- */
+  .section{padding:4.6rem 1.3rem;max-width:640px;margin:0 auto}
+  .eyebrow{font-family:'Oswald',sans-serif;font-weight:300;font-size:.66rem;letter-spacing:.36em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:.8rem}
+  .sec-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.9rem;text-align:center;color:var(--slate)}
+  .rule{width:60px;height:1px;background:var(--gold);margin:1.2rem auto;position:relative}
+  .rule::after{content:"✈";position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);color:var(--gold);font-size:.8rem;background:var(--ivory);padding:0 .4rem}
+  .reveal{opacity:0;transform:translateY(26px);transition:all .95s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------------- BOARDING PASS HERO ---------------- */
+  #hero{padding:3.4rem 1.1rem 4rem;display:flex;flex-direction:column;align-items:center;background:radial-gradient(circle at 50% 0%, rgba(174,195,214,.28), transparent 55%)}
+  .fly{width:100%;max-width:360px;height:34px;position:relative;margin-bottom:1rem;overflow:hidden}
+  .fly::before{content:"";position:absolute;top:50%;left:0;right:0;height:1px;background:repeating-linear-gradient(90deg,var(--blue-deep) 0 6px, transparent 6px 12px);opacity:.6}
+  .fly .plane{position:absolute;top:2px;left:0;font-size:1.2rem;color:var(--gold-deep);animation:cross 6s ease-in-out infinite}
+  @keyframes cross{0%{left:-6%;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:102%;opacity:0}}
+
+  .ticket{width:100%;max-width:360px;background:var(--paper);border-radius:16px;box-shadow:0 30px 55px -28px rgba(43,58,71,.6);overflow:hidden;position:relative;border:1px solid rgba(194,161,90,.25)}
+  .tk-head{background:linear-gradient(180deg,var(--blue),var(--blue-lt));color:#fff;text-align:center;padding:.95rem;font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:.26em;font-size:1.1rem;text-shadow:0 1px 2px rgba(43,58,71,.25)}
+  .tk-body{padding:1.8rem 1.5rem 1.2rem;position:relative}
+  .tk-body::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 12%, rgba(174,195,214,.18), transparent 45%);pointer-events:none}
+  .tk-script{font-family:'Great Vibes',cursive;font-size:2.9rem;text-align:center;color:var(--slate);line-height:1;position:relative}
+  .tk-heart{color:var(--gold);font-size:1.1rem;vertical-align:middle;margin:0 .1em}
+  .tk-invite{text-align:center;font-family:'Oswald',sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--slate-soft);margin-top:.9rem}
+  .tk-flight{font-family:'Great Vibes',cursive;font-size:1.9rem;text-align:center;color:var(--blue-deep);margin-top:.2rem}
+  .tk-fams{display:flex;justify-content:space-around;gap:1rem;margin-top:1.5rem;text-align:center}
+  .tk-fam .lbl{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep)}
+  .tk-fam .fam{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--slate);margin-top:.25rem;line-height:1.35}
+  .tk-when{text-align:center;margin-top:1.5rem}
+  .tk-when .dt{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--slate);letter-spacing:.02em}
+  .tk-when .vn{font-size:.78rem;letter-spacing:.06em;color:var(--slate-soft);margin-top:.35rem;line-height:1.5}
+
+  .barcode{height:44px;margin:0 1.5rem 1.2rem;background:repeating-linear-gradient(90deg,var(--slate) 0 2px, transparent 2px 4px, var(--slate) 4px 5px, transparent 5px 9px, var(--slate) 9px 12px, transparent 12px 14px);opacity:.85}
+  .perf{position:relative;height:26px;margin:.2rem 0}
+  .perf::before{content:"";position:absolute;top:50%;left:14px;right:14px;height:0;border-top:2px dashed rgba(110,136,163,.5)}
+  .perf .nl,.perf .nr{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--ivory)}
+  .perf .nl{left:-13px}.perf .nr{right:-13px}
+  .tk-stub{display:flex;align-items:center;justify-content:space-between;gap:.7rem;padding:0 1.5rem 1.5rem}
+  .stub-box{border:1px solid rgba(110,136,163,.4);padding:.5rem .55rem;text-align:center;min-width:64px}
+  .stub-box .k{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate-soft)}
+  .stub-box .v{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--slate);margin-top:.15rem}
+  .stub-mono{font-family:'Great Vibes',cursive;font-size:1.5rem;color:var(--gold-deep);text-align:center;flex:1}
+  .stub-mono small{display:block;font-family:'Oswald',sans-serif;font-weight:300;font-size:.5rem;letter-spacing:.24em;color:var(--slate-soft)}
+
+  /* ---------------- COUNTDOWN ---------------- */
+  #countdown{background:var(--blue-lt)}
+  .count-wrap{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem}
+  .count-box{background:var(--paper);border:1px solid rgba(194,161,90,.4);min-width:70px;padding:1rem .5rem;text-align:center;box-shadow:0 14px 26px -20px rgba(43,58,71,.55)}
+  .count-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--blue-deep);line-height:1}
+  .count-lbl{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--slate-soft);margin-top:.45rem}
+
+  /* ---------------- ITINERARY ---------------- */
+  .timeline{position:relative;margin-top:1.9rem;padding-left:2.1rem}
+  .timeline::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:0;border-left:2px dashed var(--gold-lt)}
+  .t-item{position:relative;padding-bottom:1.8rem}
+  .t-item:last-child{padding-bottom:0}
+  .t-item::before{content:"✈";position:absolute;left:-2.15rem;top:0;color:var(--gold-deep);font-size:.85rem;background:var(--ivory);padding:2px 0;transform:rotate(45deg)}
+  .t-time{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--blue-deep)}
+  .t-text{font-size:.95rem;color:var(--slate-soft)}
+
+  /* ---------------- DESTINATION ---------------- */
+  #destination{background:var(--blue-lt)}
+  .board-row{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:1.6rem}
+  .board-cell{background:var(--slate);color:var(--gold-lt);padding:.55rem .8rem;text-align:center;min-width:78px}
+  .board-cell .k{font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;opacity:.75}
+  .board-cell .v{font-family:'Oswald',sans-serif;font-weight:400;font-size:.95rem;letter-spacing:.08em;margin-top:.15rem}
+  .venue-card{background:var(--paper);border:1px solid rgba(194,161,90,.3);padding:1.8rem 1.4rem;text-align:center;margin-top:1.2rem;box-shadow:0 18px 36px -28px rgba(43,58,71,.5)}
+  .venue-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--slate)}
+  .venue-addr{font-size:.85rem;color:var(--slate-soft);margin-top:.3rem}
+  .map-btn{display:inline-block;margin-top:1.1rem;padding:.6rem 1.4rem;border:1px solid var(--blue-deep);color:var(--blue-deep);text-decoration:none;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;transition:.3s}
+  .map-btn:hover{background:var(--blue-deep);color:#fff}
+  .map-frame{width:100%;height:230px;border:0;margin-top:1.3rem;filter:grayscale(.1)}
+
+  /* ---------------- MESSAGES ---------------- */
+  .msg-form{max-width:420px;margin:1.7rem auto 0;display:flex;flex-direction:column;gap:.85rem}
+  .msg-form input,.msg-form textarea{width:100%;padding:.85rem 1rem;border:1px solid rgba(74,90,104,.35);background:var(--paper);font-family:'Oswald',sans-serif;font-weight:300;font-size:.95rem;color:var(--slate)}
+  .msg-form textarea{min-height:110px;resize:vertical}
+  .msg-form input:focus,.msg-form textarea:focus{outline:none;border-color:var(--gold)}
+  .send-btn{background:var(--blue-deep);color:#fff;border:none;padding:.9rem;font-family:'Oswald',sans-serif;font-weight:400;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;cursor:pointer;transition:.3s}
+  .send-btn:hover{background:var(--slate)}
+  .msg-note{text-align:center;font-size:.73rem;color:var(--slate-soft);margin-top:.9rem}
+
+  /* ---------------- FOOTER ---------------- */
+  footer{text-align:center;padding:3.4rem 1.3rem 4.4rem;background:var(--ivory)}
+  .foot-names{font-family:'Great Vibes',cursive;font-size:2.4rem;color:var(--slate);margin-bottom:.2rem}
+  .foot-thanks{font-size:.82rem;color:var(--slate-soft);margin-bottom:1.6rem;letter-spacing:.04em}
+  .socials{display:flex;justify-content:center;gap:1rem}
+  .socials a{width:42px;height:42px;border:1px solid var(--gold-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--blue-deep);text-decoration:none;font-size:1rem;transition:.3s}
+  .socials a:hover{background:var(--blue-deep);color:#fff;border-color:var(--blue-deep)}
+  .foot-tag{margin-top:1.6rem;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-deep)}
+
+  /* ---------------- MUSIC ---------------- */
+  #music-btn{position:fixed;bottom:16px;right:16px;z-index:90;width:48px;height:48px;border-radius:50%;border:1px solid var(--gold);background:var(--paper);color:var(--gold-deep);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 10px 22px -12px rgba(43,58,71,.6);transition:.3s}
+  #music-btn.playing{animation:ringspin 6s linear infinite}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- ================= PASSPORT COVER ================= -->
+<div id="passport">
+  <div class="book">
+    <div class="book-strip" id="bk-strip">SAHİB &amp; KAMOLA</div>
+    <div class="book-title">
+      <div class="wd">Wedding</div>
+      <div class="pp">PASSPORT</div>
+    </div>
+
+    <div class="emblem" id="emblem" role="button" tabindex="0" aria-label="Dəvətnaməni aç">
+      <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+        <defs><radialGradient id="gg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#E2CD93"/><stop offset="100%" stop-color="#A8863F"/>
+        </radialGradient></defs>
+        <circle cx="100" cy="100" r="86" fill="none" stroke="#C2A15A" stroke-width="1" stroke-dasharray="1 9" opacity=".8"/>
+        <g fill="#C2A15A">
+          <text x="100" y="24" font-size="9" text-anchor="middle">★</text>
+          <text x="176" y="104" font-size="9" text-anchor="middle">★</text>
+          <text x="100" y="184" font-size="9" text-anchor="middle">★</text>
+          <text x="24" y="104" font-size="9" text-anchor="middle">★</text>
+          <text x="152" y="52" font-size="7" text-anchor="middle">✦</text>
+          <text x="152" y="156" font-size="7" text-anchor="middle">✦</text>
+          <text x="48" y="156" font-size="7" text-anchor="middle">✦</text>
+          <text x="48" y="52" font-size="7" text-anchor="middle">✦</text>
+        </g>
+      </svg>
+      <svg class="plane-svg" viewBox="0 0 100 100" aria-hidden="true">
+        <path fill="url(#gg)" stroke="#8f6f2f" stroke-width="1"
+          d="M50 6 C53 6 55 10 55 18 L56 40 L88 58 L88 66 L56 55 L54 78 L67 87 L67 93 L50 87 L33 93 L33 87 L46 78 L44 55 L12 66 L12 58 L44 40 L45 18 C45 10 47 6 50 6 Z"/>
+      </svg>
+    </div>
+    <div class="tap-hint"><b></b> Dəvətnaməyə keçid etmək üçün təyyarəyə toxunun</div>
+
+    <div class="book-names">
+      <div class="n" id="bk-names">SAHİB &amp; KAMOLA</div>
+      <div class="d" id="bk-date">30.08.2026</div>
+    </div>
+    <div class="medallion"><span id="bk-mono">S&amp;K</span></div>
+  </div>
+</div>
+
+<!-- ================= BOARDING PASS HERO ================= -->
+<section id="hero">
+  <div class="fly"><span class="plane">✈</span></div>
+  <div class="ticket">
+    <div class="tk-head" id="tk-head">SAHİB &amp; KAMOLA</div>
+    <div class="tk-body">
+      <div class="tk-script"><span id="tk-n1">SAHİB</span> <span class="tk-heart">♥</span> <span id="tk-n2">KAMOLA</span></div>
+      <div class="tk-invite" id="tk-invite">TOYUMUZA DƏVƏTLİSİNİZ</div>
+      <div class="tk-flight" id="tk-flight">Xoşbəxtliyə uçuş</div>
+      <div class="tk-fams">
+        <div class="tk-fam"><div class="lbl"> </div><div class="fam" id="tk-fam1">—</div></div>
+        <div class="tk-fam"><div class="lbl"> </div><div class="fam" id="tk-fam2">—</div></div>
+      </div>
+      <div class="tk-when">
+        <div class="dt" id="tk-dt">30 Avqust 2026, Bazar · 18:00</div>
+        <div class="vn" id="tk-vn">Xuroson Restaurant<br>Daşkənd</div>
+      </div>
+    </div>
+    <div class="barcode"></div>
+    <div class="perf"><span class="nl"></span><span class="nr"></span></div>
+    <div class="tk-stub">
+      <div class="stub-box"><div class="k">Tarix</div><div class="v" id="st-date">30.08</div></div>
+      <div class="stub-mono"><span id="st-mono">S&amp;K</span><small>WEDDING PASS</small></div>
+      <div class="stub-box"><div class="k">Saat</div><div class="v" id="st-time">18:00</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COUNTDOWN ================= -->
+<section id="countdown" class="section">
+  <div class="eyebrow reveal">Uçuşa qalan vaxt</div>
+  <h2 class="sec-title serif reveal">Geri sayım</h2>
+  <div class="rule reveal"></div>
+  <div class="count-wrap reveal">
+    <div class="count-box"><div class="count-num" id="cd-days">00</div><div class="count-lbl">gün</div></div>
+    <div class="count-box"><div class="count-num" id="cd-hours">00</div><div class="count-lbl">saat</div></div>
+    <div class="count-box"><div class="count-num" id="cd-mins">00</div><div class="count-lbl">dəqiqə</div></div>
+    <div class="count-box"><div class="count-num" id="cd-secs">00</div><div class="count-lbl">saniyə</div></div>
+  </div>
+</section>
+
+<!-- ================= ITINERARY ================= -->
+<section id="program" class="section">
+  <div class="eyebrow reveal">Uçuş marşrutu</div>
+  <h2 class="sec-title serif reveal">Məclisin proqramı</h2>
+  <div class="rule reveal"></div>
+  <div class="timeline reveal" id="timeline"></div>
+</section>
+
+<!-- ================= DESTINATION ================= -->
+<section id="destination" class="section">
+  <div class="eyebrow reveal">Təyinat məntəqəsi</div>
+  <h2 class="sec-title serif reveal">Məkan</h2>
+  <div class="rule reveal"></div>
+  <div class="board-row reveal">
+    <div class="board-cell"><div class="k">Gate</div><div class="v" id="bd-gate">LOVE</div></div>
+    <div class="board-cell"><div class="k">Boarding</div><div class="v" id="bd-board">—</div></div>
+    <div class="board-cell"><div class="k">Seat</div><div class="v">VIP</div></div>
+  </div>
+  <div class="venue-card reveal">
+    <div class="venue-name serif" id="v-name">Xuroson Restaurant</div>
+    <div class="venue-addr" id="v-addr">Daşkənd</div>
+    <a class="map-btn" id="v-maplink" target="_blank" rel="noopener">Xəritədə bax</a>
+    <iframe class="map-frame" id="v-mapframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</section>
+
+<!-- ================= MESSAGES ================= -->
+<section id="messages" class="section">
+  <div class="eyebrow reveal">Bizə yazın</div>
+  <h2 class="sec-title serif reveal">Ürək sözləriniz</h2>
+  <div class="rule reveal"></div>
+  <div class="msg-form reveal">
+    <input type="text" id="msg-name" placeholder="Adınız">
+    <textarea id="msg-text" placeholder="Arzu və təbrikləriniz..."></textarea>
+    <button class="send-btn" id="msg-send">Göndər</button>
+    <p class="msg-note">Mesajınız WhatsApp vasitəsilə bizə çatacaq 💌</p>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="foot-names" id="f-names">Sahib &amp; Kamola</div>
+  <div class="foot-thanks">Sizi bu səyahətdə aramızda görməkdən şad olarıq!</div>
+  <div class="socials">
+    <a id="s-wa" target="_blank" rel="noopener" title="WhatsApp">✆</a>
+    <a id="s-ig" target="_blank" rel="noopener" title="Instagram">◎</a>
+  </div>
+  <div class="foot-tag">Boarding to forever ✈</div>
+</footer>
+
+<button id="music-btn" title="Musiqi">♪</button>
+<audio id="bg-audio" loop></audio>
+
+<script>
+/* ============================================================= */
+/*  ⬇⬇⬇  BURANI DƏYİŞ — bütün məlumatlar bir yerdə  ⬇⬇⬇          */
+/* ============================================================= */
+const CONFIG = {
+  name1: "Sahib",
+  name2: "Kamola",
+  monogram: "S&K",
+
+  // Toyun DƏQİQ tarixi/saatı (İL, AY[0=yanvar → avqust=7], GÜN, SAAT, DƏQİQƏ)
+  eventDate: new Date(2026, 7, 30, 18, 0),   // 30 Avqust 2026, 18:00
+
+  coverDate:    "30.08.2026",                 // pasport qapağında
+  dateFull:     "30 Avqust 2026, Bazar · 18:00", // biletdə
+  invite:       "TOYUMUZA DƏVƏTLİSİNİZ",
+  flightPhrase: "Xoşbəxtliyə uçuş",
+
+  //family1: "TEST1",   // qız/oğlan ailəsi
+  //family2: "TEST2",
+
+  venue:    "Xuroson Restaurant",
+  address:  "Daşkənd",
+  mapQuery: "Yunsobod 19, Tashkent",
+  gate:     "SEVGİ",
+  boarding: "17:30",
+
+  program: [
+    ["17:30", "Qonaqların qarşılanması"],
+    ["18:30", "İlk rəqs"],
+    ["19:00", "Təbriklər"],
+    ["19:30", "Canlı ifa 🥁🎷"],
+    ["21:30", "DJ"],
+    ["22:00", "Tort kəsimi"]
+  ],
+
+  whatsapp:  "994774340879",   // ölkə kodu ilə, +/boşluqsuz
+  instagram: "sahib.hasanzada",
+  musicUrl:  "Dmitri Shostakovich — Waltz No. 2.mp3"                 // öz mp3 linkin (boşdursa səs olmaz)
+};
+/* ============================================================= */
+/*  ⬆⬆⬆  DƏYİŞİKLİK BURADA BİTİR  ⬆⬆⬆                            */
+/* ============================================================= */
+
+const $ = id => document.getElementById(id);
+const pair = CONFIG.name1 + " & " + CONFIG.name2;
+const pairUp = pair.toUpperCase();
+
+$("bk-strip").textContent = pairUp;
+$("bk-names").textContent = pairUp;
+$("bk-date").textContent = CONFIG.coverDate;
+$("bk-mono").textContent = CONFIG.monogram;
+
+$("tk-head").textContent = pairUp;
+$("tk-n1").textContent = CONFIG.name1;
+$("tk-n2").textContent = CONFIG.name2;
+$("tk-invite").textContent = CONFIG.invite;
+$("tk-flight").textContent = CONFIG.flightPhrase;
+$("tk-fam1").textContent = CONFIG.family1;
+$("tk-fam2").textContent = CONFIG.family2;
+$("tk-dt").textContent = CONFIG.dateFull;
+$("tk-vn").innerHTML = CONFIG.venue + "<br>" + CONFIG.address;
+$("st-mono").textContent = CONFIG.monogram;
+$("st-date").textContent = CONFIG.coverDate.slice(0,5);
+$("st-time").textContent = CONFIG.dateFull.split("·").pop().trim();
+
+$("f-names").textContent = pair;
+$("v-name").textContent = CONFIG.venue;
+$("v-addr").textContent = CONFIG.address;
+$("bd-gate").textContent = CONFIG.gate;
+$("bd-board").textContent = CONFIG.boarding;
+
+const q = encodeURIComponent(CONFIG.mapQuery);
+$("v-maplink").href = "https://www.google.com/maps/search/?api=1&query=" + q;
+$("v-mapframe").src = "https://maps.google.com/maps?q=" + q + "&t=&z=14&ie=UTF8&iwloc=&output=embed";
+
+$("s-wa").href = "https://wa.me/" + CONFIG.whatsapp.replace(/[^0-9]/g,"");
+$("s-ig").href = "https://www.instagram.com/" + CONFIG.instagram;
+
+$("timeline").innerHTML = CONFIG.program.map(p =>
+  `<div class="t-item"><div class="t-time serif">${p[0]}</div><div class="t-text">${p[1]}</div></div>`
+).join("");
+
+const passport = $("passport"), emblem = $("emblem"), music = $("music-btn"), audio = $("bg-audio");
+function openCover(){
+  passport.classList.add("open");
+  if(CONFIG.musicUrl){ audio.play().catch(()=>{}); music.classList.add("playing"); }
+}
+emblem.addEventListener("click", openCover);
+emblem.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" ") openCover(); });
+passport.addEventListener("click", e=>{ if(e.target===passport) openCover(); });
+
+function tick(){
+  const diff = CONFIG.eventDate - new Date();
+  if(diff<=0){ ["cd-days","cd-hours","cd-mins","cd-secs"].forEach(i=>$(i).textContent="00"); return; }
+  const d=Math.floor(diff/86400000), h=Math.floor(diff%86400000/3600000),
+        m=Math.floor(diff%3600000/60000), s=Math.floor(diff%60000/1000);
+  $("cd-days").textContent=String(d).padStart(2,"0");
+  $("cd-hours").textContent=String(h).padStart(2,"0");
+  $("cd-mins").textContent=String(m).padStart(2,"0");
+  $("cd-secs").textContent=String(s).padStart(2,"0");
+}
+tick(); setInterval(tick,1000);
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.14});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+$("msg-send").addEventListener("click", ()=>{
+  const n=$("msg-name").value.trim(), t=$("msg-text").value.trim();
+  if(!t){ $("msg-text").focus(); return; }
+  window.open("https://wa.me/"+CONFIG.whatsapp.replace(/[^0-9]/g,"")+"?text="+encodeURIComponent((n?n+": ":"")+t),"_blank");
+});
+
+if(CONFIG.musicUrl) audio.src=CONFIG.musicUrl;
+music.addEventListener("click", ()=>{
+  if(!CONFIG.musicUrl) return;
+  if(audio.paused){ audio.play(); music.classList.add("playing"); }
+  else { audio.pause(); music.classList.remove("playing"); }
+});
+</script>
+</body>
+</html>
